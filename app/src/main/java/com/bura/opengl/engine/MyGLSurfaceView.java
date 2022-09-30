@@ -80,7 +80,6 @@ public class MyGLSurfaceView extends GLSurfaceView {
                     renderer.isTouching = false;
                     break;
             }
-
             previousX = x;
             previousY = y;
         }
