@@ -30,18 +30,29 @@ import javax.microedition.khronos.opengles.GL;
 public class Triangle {
     private final Engine engine;
 
+    private float topX;
+    private float topY;
+    private float leftX;
+    private float leftY;
+    private float rightX;
+    private float rightY;
+    private int id;
+
     private final FloatBuffer vertexData;
     private final int vertexCount;
 
-    float[] color = { 0.63671875f, 0.76953125f, 0.22265625f, 1.0f };
+    private float[] color = { 1.0f, 1.0f, 1.0f, 1.0f };
 
-    public Triangle(Engine engine) {
+    public Triangle(
+            Engine engine, float centerX, float centerY, float size
+    ) {
         this.engine = engine;
 
+        //center = 0,5 0,5
         float[] rectVertices = {
-                0.0f,  0.622008459f, 0.0f, // top
-                -0.5f, -0.311004243f, 0.0f, // bottom left
-                0.5f, -0.311004243f, 0.0f  // bottom right
+                centerX,  centerY + 0.2f * size, 0.0f, // top
+                centerX - 0.2f * size, centerY - 0.1f * size, 0.0f, // bottom left
+                centerX + 0.2f * size, centerY - 0.1f * size, 0.0f  // bottom right
         };
 
         vertexCount = rectVertices.length / Constants.COORDS_PER_VERTEX;
@@ -66,10 +77,19 @@ public class Triangle {
         glUniform4fv(engine.uColorLocation, 1, color, 0);
 
         engine.uMatrixLocation = glGetUniformLocation(engine.program, Constants.U_MATRIX);
-        glUniformMatrix4fv(engine.uMatrixLocation, 1, false, engine.vPMatrix, 0);
+
+        glUniformMatrix4fv(engine.uMatrixLocation, 1, false, engine.scratch, 0);
 
         glDrawArrays(GL_TRIANGLES, 0, vertexCount);
 
         glDisableVertexAttribArray(engine.aPositionLocation);
+    }
+
+    public float[] getColor() {
+        return color;
+    }
+
+    public void setColor(float[] color) {
+        this.color = color;
     }
 }

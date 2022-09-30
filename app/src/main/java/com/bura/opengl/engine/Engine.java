@@ -20,6 +20,13 @@ public class Engine {
     public final float[] projectionMatrix = new float[16];
     public final float[] viewMatrix = new float[16];
 
+    public final float[] rotationMatrix = new float[16];
+    public final float[] translationMatrix = new float[16];
+    public final float[] scratch = new float[16];
+
+    public int screenWidth;
+    public int screenHeight;
+
     public Engine(Context context) {
        this.context = context;
     }
