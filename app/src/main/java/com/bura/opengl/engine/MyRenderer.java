@@ -69,8 +69,7 @@ public class MyRenderer implements Renderer {
         engine.screenHeight = height;
         Matrix.frustumM(engine.projectionMatrix, 0, -ratio, ratio, -1, 1, 3, 7);
     }
-
-    private int time;
+    
     private float posY = 0f;
     private boolean reverseDirection = false;
 
