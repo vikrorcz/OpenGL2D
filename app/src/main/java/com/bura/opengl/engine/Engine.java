@@ -29,6 +29,11 @@ public class Engine {
     public int screenWidth;
     public int screenHeight;
 
+    public float cameraCenterX;
+    public float cameraCenterY;
+
+    public boolean isTouched = false;
+
     public Engine(Context context) {
        this.context = context;
     }

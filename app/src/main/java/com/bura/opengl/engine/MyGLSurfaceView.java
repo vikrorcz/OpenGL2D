@@ -50,13 +50,13 @@ public class MyGLSurfaceView extends GLSurfaceView {
         if (rendererSet) {
             float x = e.getX();
             float y = e.getY();
-            renderer.x  = x;
-            renderer.y = y;
-            System.out.println("x= " + x + "y= " + y);
+            renderer.touchX = x;
+            renderer.touchY = y;
+            //System.out.println("x= " + x + "y= " + y);
 
             switch (e.getAction()) {
                 case MotionEvent.ACTION_MOVE:
-                    renderer.isTouching = true;
+                    renderer.setTouching(true);
 
                     float dx = x - previousX;
                     float dy = y - previousY;
@@ -76,8 +76,16 @@ public class MyGLSurfaceView extends GLSurfaceView {
                     requestRender();
                     break;
 
+                case MotionEvent.ACTION_DOWN:
+                    renderer.setTouching(true);
+                    break;
+
+                case MotionEvent.ACTION_UP:
+                    renderer.setTouching(false);
+                    break;
+
                 default:
-                    renderer.isTouching = false;
+                    renderer.setTouching(false);
                     break;
             }
             previousX = x;
