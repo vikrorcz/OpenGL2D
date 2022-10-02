@@ -4,12 +4,14 @@ import android.content.Context;
 
 import com.bura.opengl.util.LoggerConfig;
 import com.bura.opengl.R;
+import com.bura.opengl.util.MatrixUtil;
 import com.bura.opengl.util.ShaderHelper;
 import com.bura.opengl.util.TextResourceReader;
 
 public class Engine {
 
     private final Context context;
+    public MatrixUtil matrixUtil;
 
     public int program;
     public int uColorLocation;
@@ -45,5 +47,7 @@ public class Engine {
         if (LoggerConfig.ON) {
             ShaderHelper.validateProgram(program);
         }
+
+        matrixUtil = new MatrixUtil(this);
     }
 }

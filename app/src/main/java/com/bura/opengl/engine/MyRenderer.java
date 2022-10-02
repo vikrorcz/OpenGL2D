@@ -23,14 +23,21 @@ public class MyRenderer implements Renderer {
 
     private final Engine engine;
 
+    public volatile float angle;
+    public volatile boolean isTouching;
+    public volatile float x;
+    public volatile float y;
+
     private final Triangle triangle;
     private final Triangle triangle2;
     private final Triangle triangle3;
+    private final Triangle triangle4;
+    private final Triangle triangle5;
 
     public MyRenderer(Context context){
         engine = new Engine(context);
 
-        triangle = new Triangle(engine, 0f,0f, 2);
+        triangle = new Triangle(engine, 0f,0f, 1);
         triangle.setColor(new float[]{0.63671875f, 0.76953125f, 0.22265625f, 1.0f});
 
         triangle2 = new Triangle(engine, 3f,0f, 1);
@@ -38,6 +45,12 @@ public class MyRenderer implements Renderer {
 
         triangle3 = new Triangle(engine, -3f,0f, 1);
         triangle3.setColor(new float[]{0.63671875f, 0.36953125f, 0.82265625f, 1.0f});
+
+        triangle4 = new Triangle(engine, 1f,0f, 1);
+        triangle4.setColor(new float[]{1f, 0.36953125f, 0.82265625f, 1.0f});
+
+        triangle5 = new Triangle(engine, -1f,0f, 2);
+        triangle5.setColor(new float[]{0.489498f, 0.986953125f, 0.82265625f, 1.0f});
     }
 
 
@@ -54,10 +67,10 @@ public class MyRenderer implements Renderer {
         float ratio = (float) width / height;
         engine.screenWidth = width;
         engine.screenHeight = height;
-        //Matrix.frustumM(engine.projectionMatrix, 0, -1f, 1f, -1, 1, 3, 7);
         Matrix.frustumM(engine.projectionMatrix, 0, -ratio, ratio, -1, 1, 3, 7);
     }
 
+    private int time;
     private float posY = 0f;
     private boolean reverseDirection = false;
 
@@ -82,29 +95,24 @@ public class MyRenderer implements Renderer {
             }
         }
 
+       engine.matrixUtil.rotate(angle, triangle.getCenterX(), triangle.getCenterY());
+       triangle.draw();
+       engine.matrixUtil.restore();
 
-        Matrix.multiplyMM(engine.scratch, 0, engine.vPMatrix, 0, engine.viewMatrix, 0);
-        Matrix.setRotateM(engine.rotationMatrix, 0, angle, 0, 0, -1.0f);
-        Matrix.multiplyMM(engine.scratch, 0, engine.vPMatrix, 0, engine.rotationMatrix, 0);
-        triangle.draw();
-        Matrix.multiplyMM(engine.vPMatrix, 0, engine.projectionMatrix, 0, engine.viewMatrix, 0);
-        Matrix.multiplyMM(engine.scratch, 0, engine.vPMatrix, 0, engine.viewMatrix, 0);
+       engine.matrixUtil.translate(0f, posY);
+       triangle2.draw();
+       engine.matrixUtil.restore();
 
-        Matrix.translateM(engine.scratch, 0, 0f, posY, 0f);
-        triangle2.draw();
-        Matrix.multiplyMM(engine.vPMatrix, 0, engine.projectionMatrix, 0, engine.viewMatrix, 0);
-        Matrix.multiplyMM(engine.scratch, 0, engine.vPMatrix, 0, engine.viewMatrix, 0);
+       engine.matrixUtil.translate(0f, -posY);
+       triangle3.draw();
+       engine.matrixUtil.restore();
 
-        Matrix.translateM(engine.scratch, 0, 0f, -posY, 0f);
-        triangle3.draw();
-        Matrix.multiplyMM(engine.vPMatrix, 0, engine.projectionMatrix, 0, engine.viewMatrix, 0);
-        Matrix.multiplyMM(engine.scratch, 0, engine.vPMatrix, 0, engine.viewMatrix, 0);
+       engine.matrixUtil.translateAndRotate(angle, triangle4.getCenterX(), triangle4.getCenterY(), 0, posY);
+       triangle4.draw();
+       engine.matrixUtil.restore();
+
+       engine.matrixUtil.rotate(angle, triangle5.getCenterX(), triangle5.getCenterY());
+       triangle5.draw();
+       engine.matrixUtil.restore();
     }
-
-
-
-    public volatile float angle;
-    public volatile boolean isTouching;
-    public volatile float x;
-    public volatile float y;
 }

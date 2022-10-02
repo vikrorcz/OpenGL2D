@@ -1,26 +1,19 @@
 package com.bura.opengl.activity;
 
-import androidx.appcompat.app.AppCompatActivity;
-
-import android.app.ActivityManager;
-import android.content.Context;
-import android.content.pm.ConfigurationInfo;
 import android.os.Build;
 import android.os.Bundle;
 import android.view.View;
-import android.widget.Toast;
+
+import androidx.appcompat.app.AppCompatActivity;
 
 import com.bura.opengl.engine.MyGLSurfaceView;
-import com.bura.opengl.engine.MyRenderer;
 
 public class MainActivity extends AppCompatActivity {
-
-    private MyGLSurfaceView myGLSurfaceView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        myGLSurfaceView = new MyGLSurfaceView(this);
+        MyGLSurfaceView myGLSurfaceView = new MyGLSurfaceView(this);
         setContentView(myGLSurfaceView);
 
         hideNavigationBar();

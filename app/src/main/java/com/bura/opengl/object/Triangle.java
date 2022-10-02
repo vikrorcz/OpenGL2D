@@ -27,40 +27,23 @@ import java.nio.FloatBuffer;
 
 import javax.microedition.khronos.opengles.GL;
 
-public class Triangle {
-    private final Engine engine;
+public class Triangle extends Shape {
 
-    private float topX;
-    private float topY;
-    private float leftX;
-    private float leftY;
-    private float rightX;
-    private float rightY;
-    private int id;
+    public Triangle(Engine engine, float centerX, float centerY, float size) {
+        super(engine, centerX, centerY);
 
-    private final FloatBuffer vertexData;
-    private final int vertexCount;
-
-    private float[] color = { 1.0f, 1.0f, 1.0f, 1.0f };
-
-    public Triangle(
-            Engine engine, float centerX, float centerY, float size
-    ) {
-        this.engine = engine;
-
-        //center = 0,5 0,5
-        float[] rectVertices = {
+        float[] triangleVertices = {
                 centerX,  centerY + 0.2f * size, 0.0f, // top
                 centerX - 0.2f * size, centerY - 0.1f * size, 0.0f, // bottom left
                 centerX + 0.2f * size, centerY - 0.1f * size, 0.0f  // bottom right
         };
 
-        vertexCount = rectVertices.length / Constants.COORDS_PER_VERTEX;
+        vertexCount = triangleVertices.length / Constants.COORDS_PER_VERTEX;
         vertexData = ByteBuffer
-                .allocateDirect(rectVertices.length * Constants.BYTES_PER_FLOAT)//not managed by garbage collector
+                .allocateDirect(triangleVertices.length * Constants.BYTES_PER_FLOAT)//not managed by garbage collector
                 .order(ByteOrder.nativeOrder())//organize reading of numbers
                 .asFloatBuffer();//work with floats
-        vertexData.put(rectVertices);//copy Dalvik memory to native memory
+        vertexData.put(triangleVertices);//copy Dalvik memory to native memory
         vertexData.position(0);
     }
 
@@ -77,19 +60,10 @@ public class Triangle {
         glUniform4fv(engine.uColorLocation, 1, color, 0);
 
         engine.uMatrixLocation = glGetUniformLocation(engine.program, Constants.U_MATRIX);
-
         glUniformMatrix4fv(engine.uMatrixLocation, 1, false, engine.scratch, 0);
 
         glDrawArrays(GL_TRIANGLES, 0, vertexCount);
 
         glDisableVertexAttribArray(engine.aPositionLocation);
-    }
-
-    public float[] getColor() {
-        return color;
-    }
-
-    public void setColor(float[] color) {
-        this.color = color;
     }
 }
