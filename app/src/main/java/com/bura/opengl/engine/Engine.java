@@ -2,6 +2,7 @@ package com.bura.opengl.engine;
 
 import android.content.Context;
 
+import com.bura.opengl.object.Joystick;
 import com.bura.opengl.util.LoggerConfig;
 import com.bura.opengl.R;
 import com.bura.opengl.util.MatrixUtil;
@@ -26,16 +27,26 @@ public class Engine {
     public final float[] translationMatrix = new float[16];
     public final float[] scratch = new float[16];
 
-    public int screenWidth;
-    public int screenHeight;
+    public int screenWidthPixel;
+    public int screenHeightPixel;
+
+    public float screenWidth;//GL COORDS
+    public float screenHeight;//GL COORDS
+
+    public float screenTouchX;//GL COORDS
+    public float screenTouchY;//GL COORDS
 
     public float cameraCenterX;
     public float cameraCenterY;
 
     public boolean isTouched = false;
 
+    public final Joystick joystick;
+
     public Engine(Context context) {
        this.context = context;
+
+        joystick = new Joystick(this, 1);
     }
 
     public void createShaders() {

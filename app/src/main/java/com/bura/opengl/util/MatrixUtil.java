@@ -22,17 +22,19 @@ public class MatrixUtil {
     private float velocityX = 0;
     private float velocityY = 0;
 
+    private float seekerVelocityX = 0;
+    private float seekerVelocityY = 0;
+
     public void cameraTranslate(double directionAngle) {
-        if (engine.isTouched) {
+        if (engine.joystick.isTouched()) {
             velocityX += (float) (Math.cos(directionAngle + Math.PI * 2)) * 0.02f;
-            velocityY += (float) (Math.sin(directionAngle + Math.PI)) * 0.02f;
+            velocityY += (float) (Math.sin(directionAngle + Math.PI * 2)) * 0.02f;
         }
 
         Matrix.translateM(engine.viewMatrix, 0, velocityX, velocityY, 0);
         engine.cameraCenterX = -velocityX;
         engine.cameraCenterY = -velocityY;
         Matrix.multiplyMM(engine.vPMatrix, 0, engine.projectionMatrix, 0, engine.viewMatrix, 0);
-        //System.out.println("Camera centerX= " + cameraCenterX + "Camera centerY= " + cameraCenterY);
     }
 
     public void withCameraTranslate() {
@@ -49,6 +51,15 @@ public class MatrixUtil {
 
          //version 2
          Matrix.translateM(engine.scratch, 0, posX, posY, 0f);
+    }
+
+    public void translateByAngle(float angle) {
+         velocityX += (float) (Math.cos(angle + Math.PI * 2)) * 0.002f;
+         velocityY += (float) (Math.sin(angle + Math.PI * 2)) * 0.002f;
+
+        Matrix.translateM(engine.scratch, 0, velocityX, velocityY, 0f);
+        //Matrix.translateM(engine.viewMatrix, 0, velocityX, velocityY, 0);
+        //Matrix.multiplyMM(engine.vPMatrix, 0, engine.projectionMatrix, 0, engine.viewMatrix, 0);
     }
 
     public void rotate(float angle, float centerX, float centerY) {
@@ -71,6 +82,12 @@ public class MatrixUtil {
     }
 
     public void restore() {
+        //Stop any transformation for further objects to take effect
         Matrix.multiplyMM(engine.scratch, 0, engine.vPMatrix, 0, engine.viewMatrix, 0);
+    }
+
+    public void cameraRestore() {
+        //Matrix.translateM(engine.viewMatrix, 0, 0, 0, 0);
+        //Matrix.multiplyMM(engine.scratch, 0, engine.projectionMatrix, 0, engine.viewMatrix, 0);
     }
 }

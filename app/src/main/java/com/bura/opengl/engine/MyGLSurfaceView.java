@@ -56,6 +56,7 @@ public class MyGLSurfaceView extends GLSurfaceView {
 
             switch (e.getAction()) {
                 case MotionEvent.ACTION_MOVE:
+                    renderer.currentMotionEvent = MotionEvent.ACTION_MOVE;
                     renderer.setTouching(true);
 
                     float dx = x - previousX;
@@ -77,10 +78,12 @@ public class MyGLSurfaceView extends GLSurfaceView {
                     break;
 
                 case MotionEvent.ACTION_DOWN:
+                    renderer.currentMotionEvent = MotionEvent.ACTION_DOWN;
                     renderer.setTouching(true);
                     break;
 
                 case MotionEvent.ACTION_UP:
+                    renderer.currentMotionEvent = MotionEvent.ACTION_UP;
                     renderer.setTouching(false);
                     break;
 
