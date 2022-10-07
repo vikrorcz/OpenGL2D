@@ -22,6 +22,7 @@ import static android.opengl.GLES20.glViewport;
 import com.bura.opengl.engine.Engine;
 import com.bura.opengl.object.Joystick;
 import com.bura.opengl.object.Rectangle;
+import com.bura.opengl.object.Texture;
 import com.bura.opengl.object.Triangle;
 import com.bura.opengl.util.MathUtils;
 
@@ -39,11 +40,12 @@ public class MyRenderer implements Renderer {
     private final Rectangle rectangle;
     private final Triangle triangle;
     private final Rectangle seeker;
+    //private final Texture texture;
 
     public MyRenderer(Context context){
         engine = new Engine(context);
 
-        rectangle = new Rectangle(engine, 0f,0f, 5);
+        rectangle = new Rectangle(engine, 0f,0f, 2);
         rectangle.setColor(new float[]{0.63671875f, 0.76953125f, 0.22265625f, 1.0f});
 
         seeker = new Rectangle(engine, 0f,0f, 2);
@@ -51,6 +53,8 @@ public class MyRenderer implements Renderer {
 
         triangle = new Triangle(engine, 0f,0f, 1);
         triangle.setColor(new float[]{0.83671875f, 0.26953125f, 0.22265625f, 1.0f});
+
+        //texture = new Texture(engine, 0,0);
     }
 
 
@@ -59,6 +63,7 @@ public class MyRenderer implements Renderer {
         glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
 
         engine.createShaders();
+        engine.createObjects();
     }
 
     @Override
@@ -76,31 +81,41 @@ public class MyRenderer implements Renderer {
 
     @Override
     public void onDrawFrame(GL10 unused) {
+        engine.fpsCounter.logFrame();
         inputUpdate();
 
         glClear(GL_COLOR_BUFFER_BIT);
-        Matrix.setLookAtM(engine.viewMatrix, 0, 0, 0, 3, 0f, 0f, 0f, 0f, 1.0f, 0.0f);
+        Matrix.setLookAtM(engine.viewMatrix, 0, 0, 0f, 3, 0f, 0f, 0f, 0f, 1.0f, 0.0f);
         Matrix.multiplyMM(engine.vPMatrix, 0, engine.projectionMatrix, 0, engine.viewMatrix, 0);
 
         long time = SystemClock.uptimeMillis() % 4000L;
         float angle = 0.090f * ((int) time);
 
-        engine.matrixUtil.cameraTranslate(engine.joystick.getAngle());
+
+        engine.matrixUtil.cameraTranslate(engine.joystick.getAngle());//->
+
+        triangle.draw();
 
         engine.matrixUtil.rotate(angle, rectangle.getCenterX(), rectangle.getCenterY());
         rectangle.draw();
         engine.matrixUtil.restore();
-        
-        engine.matrixUtil.translate(1,0);
+
+        engine.matrixUtil.translateByAngle((float) MathUtils.getAngle(seeker.getCenterX(), seeker.getCenterY(), engine.cameraCenterX,  engine.cameraCenterY));
         seeker.draw();
         engine.matrixUtil.restore();
+        //<-
 
-        engine.matrixUtil.withCameraTranslate();
+        engine.matrixUtil.withCameraTranslate();//->
+        engine.matrixUtil.translateAndRotate((float) Math.toDegrees(engine.joystick.getAngle()) + 90, 0,0, triangle.getCenterX(),triangle.getCenterY());
+        engine.texture.draw();
+        engine.matrixUtil.restore();
 
-        engine.matrixUtil.translate(0, 0);
-        triangle.draw();
+        engine.matrixUtil.translate(engine.cameraCenterX, engine.cameraCenterY);
         engine.joystick.draw();
         engine.matrixUtil.restore();
+        //<-
+
+
     }
 
     private void inputUpdate() {
@@ -131,8 +146,11 @@ public class MyRenderer implements Renderer {
                         engine.joystick.setActuatorX(deltaX / distance * MAX_DISTANCE);
                         engine.joystick.setActuatorY(deltaY / distance * MAX_DISTANCE);
                     }
-                    //Log.e("ActuatorX= ", String.valueOf(joystick.getActuatorX()));
-                    //Log.e("ActuatorY= ", String.valueOf(joystick.getActuatorY()));
+
+                    triangle.setCenterX(engine.cameraCenterX);
+                    triangle.setCenterY(engine.cameraCenterY);
+                    //Log.e("CenterX= ", String.valueOf(triangle.getCenterX()));
+                    //Log.e("CenterY= ", String.valueOf(triangle.getCenterY()));
 
                 break;
                 case MotionEvent.ACTION_UP:

@@ -40,7 +40,6 @@ public class MatrixUtil {
     public void withCameraTranslate() {
         Matrix.translateM(engine.viewMatrix, 0, engine.cameraCenterX, engine.cameraCenterY, 0);
         Matrix.multiplyMM(engine.scratch, 0, engine.projectionMatrix, 0, engine.viewMatrix, 0);
-        Matrix.scaleM(engine.scratch, 0, 0.5f,0.5f,0);//Fix scaling
     }
 
     public void translate(float posX, float  posY) {
@@ -53,32 +52,32 @@ public class MatrixUtil {
          Matrix.translateM(engine.scratch, 0, posX, posY, 0f);
     }
 
-    public void translateByAngle(float angle) {
-         velocityX += (float) (Math.cos(angle + Math.PI * 2)) * 0.002f;
-         velocityY += (float) (Math.sin(angle + Math.PI * 2)) * 0.002f;
+    private float velSeekerX = 0;
+    private float velSeekerY = 0;
 
-        Matrix.translateM(engine.scratch, 0, velocityX, velocityY, 0f);
-        //Matrix.translateM(engine.viewMatrix, 0, velocityX, velocityY, 0);
-        //Matrix.multiplyMM(engine.vPMatrix, 0, engine.projectionMatrix, 0, engine.viewMatrix, 0);
+    public void translateByAngle(float angle) {
+        velSeekerX -= (float) (Math.cos(angle + Math.PI * 2)) * 0.01f;
+        velSeekerY -= (float) (Math.sin(angle + Math.PI * 2)) * 0.01f;
+
+        Matrix.translateM(engine.scratch, 0, velSeekerX, velSeekerY, 0f);
     }
 
     public void rotate(float angle, float centerX, float centerY) {
         Matrix.setIdentityM(engine.rotationMatrix, 0);
-        Matrix.scaleM(engine.rotationMatrix, 0, 0.5f,0.5f,0);//Fix scaling
+        //Matrix.scaleM(engine.rotationMatrix, 0, 0.5f,0.5f,0);//Fix scaling fixme
         Matrix.translateM(engine.rotationMatrix, 0, centerX, centerY, 0);
         Matrix.rotateM(engine.rotationMatrix, 0, angle, 0, 0, 1f);
         Matrix.translateM(engine.rotationMatrix, 0, -centerX, -centerY, 0);
         Matrix.multiplyMM(engine.scratch, 0, engine.vPMatrix, 0, engine.rotationMatrix, 0);
+        //Matrix.scaleM(engine.rotationMatrix, 0, 1f,1f,0);//Fix scaling fixme
     }
 
     public void translateAndRotate(float angle, float centerX, float centerY, float posX, float posY) {
         Matrix.setIdentityM(engine.rotationMatrix, 0);
-        Matrix.scaleM(engine.rotationMatrix, 0, 0.5f,0.5f,0);//Fix scaling
         Matrix.translateM(engine.rotationMatrix, 0, posX, posY, 0);
-        Matrix.translateM(engine.rotationMatrix, 0, centerX, centerY, 0);
         Matrix.rotateM(engine.rotationMatrix, 0, angle, 0, 0, 1f);
         Matrix.translateM(engine.rotationMatrix, 0, -centerX, -centerY, 0);
-        Matrix.multiplyMM(engine.scratch, 0, engine.vPMatrix, 0, engine.rotationMatrix, 0);;
+        Matrix.multiplyMM(engine.scratch, 0, engine.vPMatrix, 0, engine.rotationMatrix, 0);
     }
 
     public void restore() {

@@ -9,6 +9,8 @@ public abstract class Shape {
     protected Engine engine;
     protected float centerX;
     protected float centerY;
+    protected float width;
+    protected float height;
     protected FloatBuffer vertexData;
     protected int vertexCount;
     protected float[] color = { 1.0f, 1.0f, 1.0f, 1.0f };
@@ -72,5 +74,21 @@ public abstract class Shape {
 
     public void setVertexCount(int vertexCount) {
         this.vertexCount = vertexCount;
+    }
+
+    public float getWidth() {
+        return width;
+    }
+
+    public void setWidth(float width) {
+        this.width = width;
+    }
+
+    public float getHeight() {
+        return height;
+    }
+
+    public void setHeight(float height) {
+        this.height = height;
     }
 }
