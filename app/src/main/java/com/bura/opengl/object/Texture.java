@@ -1,8 +1,12 @@
 package com.bura.opengl.object;
 
 import static android.opengl.GLES20.GL_FLOAT;
+import static android.opengl.GLES20.GL_TEXTURE0;
+import static android.opengl.GLES20.GL_TEXTURE1;
+import static android.opengl.GLES20.GL_TEXTURE2;
 import static android.opengl.GLES20.GL_TEXTURE_2D;
 import static android.opengl.GLES20.GL_TRIANGLE_FAN;
+import static android.opengl.GLES20.glActiveTexture;
 import static android.opengl.GLES20.glBindTexture;
 import static android.opengl.GLES20.glDisableVertexAttribArray;
 import static android.opengl.GLES20.glDrawArrays;
@@ -19,10 +23,12 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.opengl.GLES20;
 import android.opengl.GLUtils;
+import android.util.Log;
 
 import com.bura.opengl.R;
 import com.bura.opengl.engine.Engine;
 import com.bura.opengl.util.Constants;
+import com.bura.opengl.util.TextureUtil;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
@@ -34,16 +40,13 @@ public class Texture extends Shape {
     private final FloatBuffer textureData;
     private final ShortBuffer drawListData;
 
-    private final int[] textureUnit = new int[1];
+    private final short[] drawOrder = {0, 1, 2, 0, 2, 3};
 
-    short[] drawOrder = {0, 1, 2, 0, 2, 3};
+    private final int glTextureId;
 
-    public Texture(Engine engine, float x, float y) {
+    public Texture(Engine engine, float x, float y, float width, float height, int resourceId) {
         super(engine,x,y);
         this.engine = engine;
-
-        width = 1f;
-        height = 1f;
 
         float[] rectangleVertices = {
                 x, y, 0.0f,// top left
@@ -83,22 +86,7 @@ public class Texture extends Shape {
         drawListData.put(drawOrder);
         drawListData.position(0);
 
-        glUseProgram(engine.textureProgram);
-
-        Bitmap bitmap = BitmapFactory.decodeResource(engine.context.getResources(), R.drawable.player);
-
-        GLES20.glEnable(GLES20.GL_BLEND);
-        GLES20.glBlendFunc(GLES20.GL_ONE, GLES20.GL_ONE_MINUS_SRC_ALPHA);
-
-        GLES20.glActiveTexture(GLES20.GL_TEXTURE0);
-        GLES20.glGenTextures(textureUnit.length, textureUnit, 0);
-        GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, textureUnit[0]);
-
-        GLUtils.texImage2D(GLES20.GL_TEXTURE_2D, 0, bitmap, 0);
-        GLES20.glGenerateMipmap(GLES20.GL_TEXTURE_2D);
-
-        bitmap.recycle();
-
+        glTextureId = TextureUtil.getGLTextureFromResourceId(resourceId);
     }
 
     public void draw() {
@@ -109,8 +97,7 @@ public class Texture extends Shape {
         engine.aTextureLocation = GLES20.glGetAttribLocation(engine.textureProgram, Constants.A_TEXTURE);
         engine.uMatrixLocation = GLES20.glGetUniformLocation(engine.textureProgram, Constants.U_MATRIX);
 
-        glBindTexture(GL_TEXTURE_2D, textureUnit[0]);
-        GLES20.glUniform1i(engine.uTextureLocation, 0);
+        GLES20.glUniform1i(engine.uTextureLocation, glTextureId);
 
         GLES20.glUniformMatrix4fv(engine.uMatrixLocation, 1, false, engine.scratch, 0);
 
@@ -123,9 +110,7 @@ public class Texture extends Shape {
         GLES20.glEnableVertexAttribArray(engine.aPositionLocation);
         GLES20.glEnableVertexAttribArray(engine.aTextureLocation);
 
-        GLES20.glDrawElements(GLES20.GL_TRIANGLES, drawOrder.length, GLES20.GL_UNSIGNED_SHORT,
-                drawListData
-        );
+        GLES20.glDrawElements(GLES20.GL_TRIANGLES, drawOrder.length, GLES20.GL_UNSIGNED_SHORT, drawListData);
 
         glDisableVertexAttribArray(engine.aPositionLocation);
         glDisableVertexAttribArray(engine.aTextureLocation);

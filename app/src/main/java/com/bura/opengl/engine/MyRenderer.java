@@ -127,11 +127,11 @@ public class MyRenderer implements Renderer {
                     engine.screenTouchY = (touchY / engine.screenHeightPixel) * 4;
                     engine.screenTouchY = -engine.screenTouchY + 2;
 
-                    float cx = -2.5f;
-                    float cy = -1f;
+                    float cx = engine.joystick.getCenterX();
+                    float cy = engine.joystick.getCenterY();
                     float deltaX = engine.screenTouchX - cx;
                     float deltaY = engine.screenTouchY - cy;
-                    float distance = (float) Math.sqrt(Math.pow(deltaX, 2) + Math.pow(deltaY, 2));
+                    float distance = (float) Math.sqrt(Math.pow(deltaX - 0.25f, 2) + Math.pow(deltaY + 0.25f, 2));
                     final float MAX_DISTANCE = 0.6f;
 
                     double angle = MathUtils.getAngle(cx, cy, engine.screenTouchX, engine.screenTouchY);
@@ -139,26 +139,20 @@ public class MyRenderer implements Renderer {
 
                     if (distance <= MAX_DISTANCE) {
                         engine.joystick.setTouched(true);
-                        engine.joystick.setActuatorX(deltaX);
-                        engine.joystick.setActuatorY(deltaY);
+                        engine.joystick.setActuatorX(deltaX - 0.25f);
+                        engine.joystick.setActuatorY(deltaY + 0.25f);
                     } else {
                         //out of bounds
-                        engine.joystick.setActuatorX(deltaX / distance * MAX_DISTANCE);
-                        engine.joystick.setActuatorY(deltaY / distance * MAX_DISTANCE);
+                        engine.joystick.setActuatorX((deltaX - 0.25f) / distance * MAX_DISTANCE);
+                        engine.joystick.setActuatorY((deltaY + 0.25f)/ distance * MAX_DISTANCE);
                     }
 
                     triangle.setCenterX(engine.cameraCenterX);
                     triangle.setCenterY(engine.cameraCenterY);
-                    //Log.e("CenterX= ", String.valueOf(triangle.getCenterX()));
-                    //Log.e("CenterY= ", String.valueOf(triangle.getCenterY()));
 
                 break;
                 case MotionEvent.ACTION_UP:
                     engine.joystick.setTouched(false);
-                    //joystick.setActuatorX(0);
-                    //joystick.setActuatorY(0);
-                    //Log.e("ActuatorX= ", String.valueOf(joystick.getActuatorX()));
-                    //Log.e("ActuatorY= ", String.valueOf(joystick.getActuatorY()));
                 break;
         }
 

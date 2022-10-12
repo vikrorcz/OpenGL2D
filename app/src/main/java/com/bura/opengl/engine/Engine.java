@@ -10,6 +10,7 @@ import com.bura.opengl.R;
 import com.bura.opengl.util.MatrixUtil;
 import com.bura.opengl.util.ShaderHelper;
 import com.bura.opengl.util.TextResourceReader;
+import com.bura.opengl.util.TextureUtil;
 
 public class Engine {
 
@@ -22,6 +23,8 @@ public class Engine {
     public int aPositionLocation;
     public int aTextureLocation;
     public int uTextureLocation;
+
+    public int mTextureDataHandle;
 
     public int uMatrixLocation;
     public final float[] vPMatrix = new float[16];
@@ -46,15 +49,17 @@ public class Engine {
 
     public boolean isTouched = false;
 
-    public final Joystick joystick;
+    public Joystick joystick;
     public final FPSCounter fpsCounter;
     public Texture texture;
+    public TextureUtil textureUtil;
 
     public Engine(Context context) {
        this.context = context;
 
-        joystick = new Joystick(this, 1);
         fpsCounter = new FPSCounter();
+        textureUtil = new TextureUtil(this);
+
     }
 
     public void createShaders() {
@@ -87,6 +92,9 @@ public class Engine {
 
     public void createObjects() {
         matrixUtil = new MatrixUtil(this);
-        texture = new Texture(this,-0.2f, 0.2f);
+        textureUtil.createTextures();
+
+        texture = new Texture(this,-0.2f, 0.2f, 1f, 1f, R.drawable.player);
+        joystick = new Joystick(this, 1);
     }
 }
